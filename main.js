@@ -132,19 +132,21 @@ app.on('ready',() => {
 
             // Menu item
             case consts.eventNames.menuItemCmdSetChecked:
-            elements[json.targetID].checked = json.menuItemOptions.checked
+            if (elements[json.targetID]){
+                elements[json.targetID].checked = json.menuItemOptions.checked
+            }
             client.write(json.targetID, consts.eventNames.menuItemEventCheckedSet)
             break;
             case consts.eventNames.menuItemCmdSetEnabled:
-            elements[json.targetID].enabled = json.menuItemOptions.enabled
+            if (elements[json.targetID]) elements[json.targetID].enabled = json.menuItemOptions.enabled;
             client.write(json.targetID, consts.eventNames.menuItemEventEnabledSet)
             break;
             case consts.eventNames.menuItemCmdSetLabel:
-            elements[json.targetID].label = json.menuItemOptions.label
+            if (elements[json.targetID]) elements[json.targetID].label = json.menuItemOptions.label;
             client.write(json.targetID, consts.eventNames.menuItemEventLabelSet)
             break;
             case consts.eventNames.menuItemCmdSetVisible:
-            elements[json.targetID].visible = json.menuItemOptions.visible
+            if (elements[json.targetID])  elements[json.targetID].visible = json.menuItemOptions.visible
             client.write(json.targetID, consts.eventNames.menuItemEventVisibleSet)
             break;
 
@@ -154,20 +156,20 @@ app.on('ready',() => {
             break;
             case consts.eventNames.notificationCmdShow:
             if (Notification.isSupported()) {
-                elements[json.targetID].show();
+                if (elements[json.targetID])  elements[json.targetID].show();
             }
             break;
 
             // Session
             case consts.eventNames.sessionCmdClearCache:
-            elements[json.targetID].clearCache(function() {
+            if (elements[json.targetID])  elements[json.targetID].clearCache(function() {
                 client.write(json.targetID, consts.eventNames.sessionEventClearedCache)
             })
             break;
 
             // Sub menu
             case consts.eventNames.subMenuCmdAppend:
-            elements[json.targetID].append(menuItemCreate(json.menuItem))
+            if (elements[json.targetID])  elements[json.targetID].append(menuItemCreate(json.menuItem))
             setMenu(json.menuItem.rootId)
             client.write(json.targetID, consts.eventNames.subMenuEventAppended)
             break;
@@ -176,11 +178,11 @@ app.on('ready',() => {
             if (typeof json.windowId !== "undefined") {
                 window = elements[json.windowId]
             }
-            elements[json.targetID].closePopup(window)
+            if (elements[json.targetID])  elements[json.targetID].closePopup(window)
             client.write(json.targetID, consts.eventNames.subMenuEventClosedPopup)
             break;
             case consts.eventNames.subMenuCmdInsert:
-            elements[json.targetID].insert(json.menuItemPosition, menuItemCreate(json.menuItem))
+            if (elements[json.targetID])  elements[json.targetID].insert(json.menuItemPosition, menuItemCreate(json.menuItem))
             setMenu(json.menuItem.rootId)
             client.write(json.targetID, consts.eventNames.subMenuEventInserted)
             break;
@@ -190,7 +192,7 @@ app.on('ready',() => {
                 window = elements[json.windowId]
             }
             json.menuPopupOptions.async = true
-            elements[json.targetID].popup(window, json.menuPopupOptions)
+            if (elements[json.targetID])  elements[json.targetID].popup(window, json.menuPopupOptions)
             client.write(json.targetID, consts.eventNames.subMenuEventPoppedUp)
             break;
 
@@ -199,12 +201,12 @@ app.on('ready',() => {
             trayCreate(json)
             break;
             case consts.eventNames.trayCmdDestroy:
-            elements[json.targetID].destroy()
+            if (elements[json.targetID])  elements[json.targetID].destroy()
             elements[json.targetID] = null
             client.write(json.targetID, consts.eventNames.trayEventDestroyed)
             break;
             case consts.eventNames.trayCmdSetImage:
-            elements[json.targetID].setImage(json.image);
+            if (elements[json.targetID]) elements[json.targetID].setImage(json.image);
             client.write(json.targetID, consts.eventNames.trayEventImageSet)
             break;
 
@@ -215,62 +217,62 @@ app.on('ready',() => {
 
             // Window
             case consts.eventNames.windowCmdBlur:
-            elements[json.targetID].blur()
+            if (elements[json.targetID]) elements[json.targetID].blur()
             break;
             case consts.eventNames.windowCmdCenter:
-            elements[json.targetID].center()
+            if (elements[json.targetID]) elements[json.targetID].center()
             break;
             case consts.eventNames.windowCmdClose:
-            elements[json.targetID].close()
+            if (elements[json.targetID]) elements[json.targetID].close()
             break;
             case consts.eventNames.windowCmdCreate:
             windowCreate(json)
             break;
             case consts.eventNames.windowCmdDestroy:
-            elements[json.targetID].destroy()
+            if (elements[json.targetID]) elements[json.targetID].destroy()
             elements[json.targetID] = null
             break;
             case consts.eventNames.windowCmdFocus:
-            elements[json.targetID].focus()
+            if (elements[json.targetID]) elements[json.targetID].focus()
             break;
             case consts.eventNames.windowCmdHide:
-            elements[json.targetID].hide()
+            if (elements[json.targetID]) elements[json.targetID].hide()
             break;
             case consts.eventNames.windowCmdLog:
-            elements[json.targetID].webContents.send(consts.eventNames.ipcCmdLog, json.message)
+            if (elements[json.targetID]) elements[json.targetID].webContents.send(consts.eventNames.ipcCmdLog, json.message)
             break;
             case consts.eventNames.windowCmdMaximize:
-            elements[json.targetID].maximize()
+            if (elements[json.targetID]) elements[json.targetID].maximize()
             break;
             case consts.eventNames.windowCmdMessage:
             case consts.eventNames.windowCmdMessageCallback:
             let m = {message: json.message}
             if (typeof json.callbackId !== "undefined") m.callbackId = json.callbackId
-            elements[json.targetID].webContents.send(json.name === consts.eventNames.windowCmdMessageCallback ? consts.eventNames.ipcCmdMessageCallback : consts.eventNames.ipcCmdMessage, m)
+            if (elements[json.targetID]) elements[json.targetID].webContents.send(json.name === consts.eventNames.windowCmdMessageCallback ? consts.eventNames.ipcCmdMessageCallback : consts.eventNames.ipcCmdMessage, m)
             break;
             case consts.eventNames.windowCmdMinimize:
-            elements[json.targetID].minimize()
+            if (elements[json.targetID]) elements[json.targetID].minimize()
             break;
             case consts.eventNames.windowCmdMove:
-            elements[json.targetID].setPosition(json.windowOptions.x, json.windowOptions.y, true)
+            if (elements[json.targetID]) elements[json.targetID].setPosition(json.windowOptions.x, json.windowOptions.y, true)
             break;
             case consts.eventNames.windowCmdResize:
-            elements[json.targetID].setSize(json.windowOptions.width, json.windowOptions.height, true)
+            if (elements[json.targetID]) elements[json.targetID].setSize(json.windowOptions.width, json.windowOptions.height, true)
             break;
             case consts.eventNames.windowCmdRestore:
-            elements[json.targetID].restore()
+            if (elements[json.targetID]) elements[json.targetID].restore()
             break;
             case consts.eventNames.windowCmdShow:
-            elements[json.targetID].show()
+            if (elements[json.targetID]) elements[json.targetID].show()
             break;
             case consts.eventNames.windowCmdWebContentsCloseDevTools:
-            elements[json.targetID].webContents.closeDevTools()
+            if (elements[json.targetID]) elements[json.targetID].webContents.closeDevTools()
             break;
             case consts.eventNames.windowCmdWebContentsOpenDevTools:
-            elements[json.targetID].webContents.openDevTools()
+            if (elements[json.targetID]) elements[json.targetID].webContents.openDevTools()
             break;
             case consts.eventNames.windowCmdUnmaximize:
-            elements[json.targetID].unmaximize()
+            if (elements[json.targetID]) elements[json.targetID].unmaximize()
             break;
         }
     });
