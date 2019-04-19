@@ -259,8 +259,30 @@ app.on('ready',() => {
             case consts.eventNames.windowCmdResize:
             if (elements[json.targetID]) elements[json.targetID].setSize(json.windowOptions.width, json.windowOptions.height, true)
             break;
+            case consts.eventNames.windowCmdSetBounds:
+            if (elements[json.targetID]) elements[json.targetID].setBounds(json.bounds, true);
+            break;
+            case consts.eventNames.windowCmdGetBounds:
+            let boundData = {x:0, y:0, width:0, height:0}
+            if (elements[json.targetID]) boundData = elements[json.targetID].getBounds();
+            let bound = {bounds: boundData}
+            client.write(json.targetID, consts.eventNames.windowEventGetDone, bound)
+            break;
             case consts.eventNames.windowCmdRestore:
             if (elements[json.targetID]) elements[json.targetID].restore()
+            break;
+            case consts.eventNames.windowCmdHook:
+            if (elements[json.targetID]) {
+                if (json.hookMessage == 0x0218) {
+                    elements[json.targetID].hookWindowMessage(json.hookMessage, function(wParam, lParam) {
+                        client.write(json.targetID, consts.eventNames.windowEventSystemAwake, {wparam: wParam.readUInt32LE(0)})
+                    })
+                } else if (json.hookMessage == 0x0011) {
+                    elements[json.targetID].hookWindowMessage(json.hookMessage, function(wParam, lParam) {
+                        client.write(json.targetID, consts.eventNames.windowEventSystemShutdown, {wparam: wParam.readUInt32LE(0)})
+                    })
+                }
+            }
             break;
             case consts.eventNames.windowCmdShow:
             if (elements[json.targetID]) elements[json.targetID].show()
