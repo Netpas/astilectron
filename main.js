@@ -259,6 +259,15 @@ app.on('ready',() => {
             case consts.eventNames.windowCmdResize:
             if (elements[json.targetID]) elements[json.targetID].setSize(json.windowOptions.width, json.windowOptions.height, true)
             break;
+            case consts.eventNames.windowCmdSetBounds:
+            if (elements[json.targetID]) elements[json.targetID].setBounds(json.bounds, true);
+            break;
+            case consts.eventNames.windowCmdGetBounds:
+            let boundData = {x:0, y:0, width:0, height:0}
+            if (elements[json.targetID]) boundData = elements[json.targetID].getBounds();
+            let bound = {bounds: boundData}
+            client.write(json.targetID, consts.eventNames.windowEventGetDone, bound)
+            break;
             case consts.eventNames.windowCmdRestore:
             if (elements[json.targetID]) elements[json.targetID].restore()
             break;

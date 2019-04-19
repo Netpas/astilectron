@@ -87,6 +87,8 @@ module.exports = {
         windowCmdMinimize: "window.cmd.minimize",
         windowCmdMove: "window.cmd.move",
         windowCmdResize: "window.cmd.resize",
+        windowCmdSetBounds: "window.cmd.setbounds",
+        windowCmdGetBounds: "window.cmd.getbounds",
         windowCmdRestore: "window.cmd.restore",
         windowCmdShow: "window.cmd.show",
         windowCmdUnmaximize: "window.cmd.unmaximize",
@@ -109,7 +111,8 @@ module.exports = {
         windowEventRestore: "window.event.restore",
         windowEventShow: "window.event.show",
         windowEventUnmaximize: "window.event.unmaximize",
-        windowEventUnresponsive: "window.event.unresponsive"
+        windowEventUnresponsive: "window.event.unresponsive",
+        windowEventGetDone: "window.event.get.done"
     },
     targetIds: {
         app: 'app',
