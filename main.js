@@ -271,6 +271,19 @@ app.on('ready',() => {
             case consts.eventNames.windowCmdRestore:
             if (elements[json.targetID]) elements[json.targetID].restore()
             break;
+            case consts.eventNames.windowCmdHook:
+            if (elements[json.targetID]) {
+                if (json.hookMessage == 0x0218) {
+                    elements[json.targetID].hookWindowMessage(json.hookMessage, function(wParam, lParam) {
+                        client.write(json.targetID, consts.eventNames.windowEventSystemAwake, {wparam: wParam.readUInt32LE(0)})
+                    })
+                } else if (json.hookMessage == 0x0011) {
+                    elements[json.targetID].hookWindowMessage(json.hookMessage, function(wParam, lParam) {
+                        client.write(json.targetID, consts.eventNames.windowEventSystemShutdown, {wparam: wParam.readUInt32LE(0)})
+                    })
+                }
+            }
+            break;
             case consts.eventNames.windowCmdShow:
             if (elements[json.targetID]) elements[json.targetID].show()
             break;
