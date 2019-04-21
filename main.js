@@ -12,8 +12,27 @@ let elements = {};
 let menus = {};
 let quittingApp = false;
 
+// Single instance
+let lastWindow = null;
+if (process.argv[3] === "true") {
+    // Lock
+    const singlesInstanceLock = app.requestSingleInstanceLock();
+    if (!singleInstanceLock) {
+        app.quit();
+        return;
+    }
+
+    // Someone tried to run a second instance, we should focus our window. 
+    app.on('second-instance', (event, commandLine, workingDirectory) => { 
+        if (lastWindow) {
+            if (lastWindow.isMinimized()) lastWindow.restore();
+            lastWindow.show();
+        }
+    });
+}
+
 // Command line switches
-let idx = 3;
+let idx = 4;
 for (let i = idx; i < process.argv.length; i++) {
     let s = process.argv[i].replace(/^[\-]+/g,"");
     let v;
@@ -535,6 +554,12 @@ function windowCreateFinish(json) {
             url: url
         })
     })
+    if (typeof json.windowOptions.appDetails !== "undefined" && process.platform === "win32"){
+        elements[json.targetID].setThumbarButtons([]);
+        elements[json.targetID].setAppDetails(json.windowOptions.appDetails);
+    }
+
+    lastWindow = elements[json.targetID] 
 }
 
 function registerCallback(json, k, e, n, c) {
