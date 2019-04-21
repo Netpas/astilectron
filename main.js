@@ -12,8 +12,27 @@ let elements = {};
 let menus = {};
 let quittingApp = false;
 
+// Single instance
+let lastWindow = null;
+if (process.argv[3] === "true") {
+    // Lock
+    const singlesInstanceLock = app.requestSingleInstanceLock();
+    if (!singleInstanceLock) {
+        app.quit();
+        return;
+    }
+
+    // Someone tried to run a second instance, we should focus our window. 
+    app.on('second-instance', (event, commandLine, workingDirectory) => { 
+        if (lastWindow) {
+            if (lastWindow.isMinimized()) lastWindow.restore();
+            lastWindow.show();
+        }
+    });
+}
+
 // Command line switches
-let idx = 3;
+let idx = 4;
 for (let i = idx; i < process.argv.length; i++) {
     let s = process.argv[i].replace(/^[\-]+/g,"");
     let v;
@@ -261,12 +280,22 @@ app.on('ready',() => {
             break;
             case consts.eventNames.windowCmdSetBounds:
             if (elements[json.targetID]) elements[json.targetID].setBounds(json.bounds, true);
+            client.write(json.targetID, consts.eventNames.windowEventSetBounds)
             break;
             case consts.eventNames.windowCmdGetBounds:
             let boundData = {x:0, y:0, width:0, height:0}
             if (elements[json.targetID]) boundData = elements[json.targetID].getBounds();
             let bound = {bounds: boundData}
-            client.write(json.targetID, consts.eventNames.windowEventGetDone, bound)
+            client.write(json.targetID, consts.eventNames.windowEventGetBounds, bound)
+            break;
+            case consts.eventNames.windowCmdSetTitle:
+            if (elements[json.targetID]) elements[json.targetID].setTitle(json.title);
+            client.write(json.targetID, consts.eventNames.windowEventSetTitle)
+            break;
+            case consts.eventNames.windowCmdGetTitle:
+            let titleStr
+            if (elements[json.targetID]) titleStr = elements[json.targetID].getTitle();
+            client.write(json.targetID, consts.eventNames.windowEventGetTitle, {title: titleStr})
             break;
             case consts.eventNames.windowCmdRestore:
             if (elements[json.targetID]) elements[json.targetID].restore()
@@ -525,6 +554,12 @@ function windowCreateFinish(json) {
             url: url
         })
     })
+    if (typeof json.windowOptions.appDetails !== "undefined" && process.platform === "win32"){
+        elements[json.targetID].setThumbarButtons([]);
+        elements[json.targetID].setAppDetails(json.windowOptions.appDetails);
+    }
+
+    lastWindow = elements[json.targetID] 
 }
 
 function registerCallback(json, k, e, n, c) {
