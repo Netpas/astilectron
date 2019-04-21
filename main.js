@@ -261,12 +261,22 @@ app.on('ready',() => {
             break;
             case consts.eventNames.windowCmdSetBounds:
             if (elements[json.targetID]) elements[json.targetID].setBounds(json.bounds, true);
+            client.write(json.targetID, consts.eventNames.windowEventSetBounds)
             break;
             case consts.eventNames.windowCmdGetBounds:
             let boundData = {x:0, y:0, width:0, height:0}
             if (elements[json.targetID]) boundData = elements[json.targetID].getBounds();
             let bound = {bounds: boundData}
-            client.write(json.targetID, consts.eventNames.windowEventGetDone, bound)
+            client.write(json.targetID, consts.eventNames.windowEventGetBounds, bound)
+            break;
+            case consts.eventNames.windowCmdSetTitle:
+            if (elements[json.targetID]) elements[json.targetID].setTitle(json.title);
+            client.write(json.targetID, consts.eventNames.windowEventSetTitle)
+            break;
+            case consts.eventNames.windowCmdGetTitle:
+            let titleStr
+            if (elements[json.targetID]) titleStr = elements[json.targetID].getTitle();
+            client.write(json.targetID, consts.eventNames.windowEventGetTitle, {title: titleStr})
             break;
             case consts.eventNames.windowCmdRestore:
             if (elements[json.targetID]) elements[json.targetID].restore()
