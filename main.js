@@ -1,7 +1,7 @@
 'use strict'
 
 const electron = require('electron')
-const {app, BrowserWindow, ipcMain, Menu, MenuItem, Tray, dialog, Notification} = electron
+const {app, BrowserWindow, ipcMain, Menu, MenuItem, Tray, dialog, Notification, shell} = electron
 const consts = require('./src/consts.js')
 const client = require('./src/client.js').init()
 const rl = require('readline').createInterface({input: client.socket})
@@ -553,6 +553,15 @@ function windowCreateFinish(json) {
         client.write(json.targetID, consts.eventNames.windowEventWillNavigate, {
             url: url
         })
+    })
+    elements[json.targetID].webContents.on('new-window', (event, url) => {
+        client.write(json.targetID, 'new-window', {
+            url: url
+        })
+        if (url.indexOf('http://')>-1 || url.indexOf('https://')>-1){
+            shell.openExternal(url)
+            event.preventDefault();
+        }
     })
     if (typeof json.windowOptions.appDetails !== "undefined" && process.platform === "win32"){
         elements[json.targetID].setThumbarButtons([]);
